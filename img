@@ -1,0 +1,153 @@
+#! /usr/bin/python
+
+from tkinter import *
+from PIL import Image, ImageTk, ImageOps
+from threading import Thread
+import sys
+import math
+import os
+from subprocess import call
+
+#all the methods are here
+#threading to make it faster
+def threaded_function():
+    global imgList,thumbs,group,thmblbl
+    #thumbnail all the images in the folder, and add them to the frame
+    thumbs = []
+    for i,f in enumerate(imgList):
+        thumbs.append(Image.open(dir+f))
+        thumbs[i].thumbnail((.05*swidth,.05*sheight),Image.ANTIALIAS)
+        thumbs[i] = ImageTk.PhotoImage(thumbs[i],palette=512)
+
+        #create the label and pack it
+        if i == imgList.index(currImage): #one selected needs a border
+            thmblbl.append(Label(group,image=thumbs[i],bg='yellow',relief='raised',bd=2))
+        else:
+            thmblbl.append(Label(group,image=thumbs[i],bg='yellow',relief='raised',bd=0))
+        thmblbl[i].pack(side=LEFT)
+
+#set up the image, set up currImage and then call imopen
+def imopen():
+    global tkimage,currImage,dir
+    maxHeight = .9*sheight
+
+    #open the image
+    im = Image.open(dir+currImage)
+
+    #set the width and height of the image
+    (iwidth,iheight) = im.size
+    if(iwidth > swidth or iheight > maxHeight):
+        ratio = iwidth/iheight
+        adjHeight = math.ceil(maxHeight)
+        adjWidth = math.ceil(adjHeight*ratio)
+    else:
+        adjWidth = iwidth
+        adjHeight = iheight
+
+    #adjust the size of the image
+    im = ImageOps.fit(im,(adjWidth,adjHeight), Image.ANTIALIAS)
+    tkimage = ImageTk.PhotoImage(im, palette=512)
+    
+#the handler for the keystroke
+def key(event):
+     global currImage,tkimage,thmblbl
+     index = imgList.index(currImage)
+
+     if event.keysym == 'Left':
+         #update the top portion highlight
+         thmblbl[index].configure(bd=0)
+         thmblbl[index].bd = 0
+         index = (index - 1)%len(imgList)
+
+         #open the image and upadate current image
+         currImage = imgList[(index)]
+         imopen()
+     if event.keysym == 'Right':
+         #update the top portion highlight
+         thmblbl[index].configure(bd=0)
+         thmblbl[index].bd = 0
+         index = (index + 1)%len(imgList)
+
+         #open the image and upadate current image
+         currImage = imgList[(index)%len(imgList)]
+         imopen()
+     
+     #update the main label with the new image
+     mainImg.configure(image=tkimage)
+     mainImg.image = tkimage 
+
+     #update the image bar
+     thmblbl[index].configure(bd=2)
+     thmblbl[index].bd = 2
+
+     #if the space bar is pressed, change the image
+     if event.keysym == 'space':
+         call(["wp", "change", currImage])
+
+     if event.keysym == 'Return':
+         call(["wp", "add", dir+currImage])
+
+     if event.keysym == 'Escape':
+         sys.exit()
+
+#set up the directory
+dir = os.getcwd()+"/"
+
+#check if they passeed anything
+if len(sys.argv) == 1:
+    currImage = ''
+else: #if the did pass somethign directory is based off files
+    filename = sys.argv[1]
+    #currImage will always be the last part of the file name. if a filename ends in / (i.e. the filename is a dir) currImage is set to ''
+    currImage = filename[filename.rfind('/')+1:len(filename)]
+
+    #if the user passes a directory, it will open the cwd instead w/o this line
+    #basically checks if the thing passed is an image or a directory by comparing what currimage is to what was passed
+    if currImage != filename:
+        dir = dir+filename[0:filename.find('/')+1]
+    print(dir)    
+
+#set up the window
+root = Tk() 
+
+#get the width and height of the screen
+swidth = root.winfo_screenwidth()
+sheight = root.winfo_screenheight()
+
+#set up the list for all the images
+dirlist = os.listdir(dir)
+imgList = []
+for f in dirlist:
+    try:
+        Image.open(dir+f)
+        imgList.append(f)
+    except:
+        pass
+
+#create the bottom portion
+group = LabelFrame(root,text="Other Images in " + dir)
+group.pack()
+
+#declare the array to hold the labels
+thmblbl = []
+
+#start a thread to make this all faster
+thread = Thread(target = threaded_function)
+thread.start()
+
+#check if a directory or an image was opened
+if currImage == '':
+    currImage = imgList[0]
+imopen()
+
+#put the image in a label
+mainImg = Label(root, image=tkimage)
+mainImg.pack(side=BOTTOM)
+
+#set the size
+root.geometry('{}x{}'.format(swidth,sheight))
+
+#bind the event
+root.bind("<Key>", key)
+root.mainloop()
+thread.join()
