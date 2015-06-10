@@ -100,12 +100,12 @@ else: #if the did pass somethign directory is based off files
     filename = sys.argv[1]
     #currImage will always be the last part of the file name. if a filename ends in / (i.e. the filename is a dir) currImage is set to ''
     currImage = filename[filename.rfind('/')+1:len(filename)]
-
+    print("here")
     #if the user passes a directory, it will open the cwd instead w/o this line
     #basically checks if the thing passed is an image or a directory by comparing what currimage is to what was passed
     if currImage != filename:
-        dir = dir+filename[0:filename.find('/')+1]
-    print(dir)    
+        dir = filename[0:filename.rfind('/')+1]
+        print(dir)
 
 #set up the window
 root = Tk() 
