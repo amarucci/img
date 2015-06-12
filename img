@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-from tkinter import *
+from Tkinter import *
 from PIL import Image, ImageTk, ImageOps
 from threading import Thread
 import sys
@@ -30,16 +30,21 @@ def threaded_function():
 def imopen():
     global tkimage,currImage,dir
     maxHeight = .9*sheight
+    maxWidth = swidth
 
     #open the image
     im = Image.open(dir+currImage)
 
     #set the width and height of the image
     (iwidth,iheight) = im.size
-    if(iwidth > swidth or iheight > maxHeight):
-        ratio = iwidth/iheight
-        adjHeight = math.ceil(maxHeight)
-        adjWidth = math.ceil(adjHeight*ratio)
+    if(iwidth > maxWidth):
+        ratio = maxWidth/iwidth
+        adjHeight = int(math.ceil(iheight*ratio))
+        adjWidth = int(math.ceil(iwidth*ratio))
+    elif (iheight > maxHeight):
+        ratio = maxHeight/iheight
+        adjHeight = int(math.ceil(iheight*ratio))
+        adjWidth = int(math.ceil(iwidth*ratio))
     else:
         adjWidth = iwidth
         adjHeight = iheight
