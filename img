@@ -127,6 +127,11 @@ for f in dirlist:
     except:
         pass
 
+#see if the list has anything in it
+if(len(imgList) == 0):
+    print("No images in directory")
+    exit()
+
 #create the bottom portion
 group = LabelFrame(root,text="Other Images in " + dir)
 group.pack()
