@@ -8,6 +8,7 @@ Press the arrow keys to view other images in the directory of the image/director
 Supports everett1992 wp script (https://github.com/everett1992/wp)
 Use the spacebar for wp change [current image] and the return key for wp add [current image]
 
+Requires Tkinter and PILLOW to run
 TODO:
 	1. Make the background transparent
 	2. Make the thumbnails move so you can see all images as you scroll through the directory
