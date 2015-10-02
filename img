@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-from Tkinter import *
+from tkinter import *
 from PIL import Image, ImageTk, ImageOps
 from threading import Thread
 import sys
