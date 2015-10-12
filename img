@@ -7,11 +7,12 @@ import sys
 import math
 import os
 from subprocess import call
+#import img_thread
+#import img_imopen
 
-#all the methods are here
 #threading to make it faster
 def threaded_function():
-    global imgList,thumbs,group,thmblbl
+    global thumbs,group,thmblbl
     #thumbnail all the images in the folder, and add them to the frame
     thumbs = []
     for i,f in enumerate(imgList):
@@ -110,8 +111,13 @@ else: #if the did pass somethign directory is based off files
     if currImage != filename:
         dir = filename[0:filename.rfind('/')+1]
 
+#define variables needed
+bgcolor='black'
+
 #set up the window
 root = Tk() 
+root.configure(bg=bgcolor)
+root.attributes("-fullscreen", True)
 
 #get the width and height of the screen
 swidth = root.winfo_screenwidth()
@@ -134,6 +140,7 @@ if(len(imgList) == 0):
 
 #create the bottom portion
 group = LabelFrame(root,text="Other Images in " + dir)
+group.config(bg=bgcolor,fg='white')
 group.pack()
 
 #declare the array to hold the labels
