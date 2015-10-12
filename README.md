@@ -10,5 +10,4 @@ Use the spacebar for wp change [current image] and the return key for wp add [cu
 
 Requires Tkinter and PILLOW to run
 TODO:
-	1. Make the background transparent
-	2. Make the thumbnails move so you can see all images as you scroll through the directory
+	1. Make the background transparent(not possible with tkinter, requires different gui manager)
