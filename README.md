@@ -10,4 +10,6 @@ Use the spacebar for wp change [current image] and the return key for wp add [cu
 
 Requires Tkinter and PILLOW to run
 TODO:
+
 	1. Make the background transparent(not possible with tkinter, requires different gui manager)
+	2. Get things to be not in one file. This requires not using globals anymore(shouldn't do that anyway)
