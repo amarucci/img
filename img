@@ -42,7 +42,7 @@ def imopen():
         ratio = maxHeight/iheight
         adjHeight = int(math.ceil(iheight*ratio))
         adjWidth = int(math.ceil(iwidth*ratio))
-    if(iwidth > maxWidth):
+    elif(iwidth > maxWidth):
         ratio = maxWidth/iwidth
         adjHeight = int(math.ceil(iheight*ratio))
         adjWidth = int(math.ceil(iwidth*ratio))
@@ -61,14 +61,12 @@ def updateImageBar(index):
 
     if maxThumbs > 20:
         maxThumbs = 20
-    if index > 20:
-        index = 20
 
     group.configure(text=currImage+". Other Images In " + dir)
 
+    group.configure(text=index)
     for i in range(0,maxThumbs):
        thmblbl[i].configure(image=thumbs[(i+index)%len(imgList)]) 
-       thmblbl[i].image = thumbs[(i+index)%len(imgList)]
 
 #the handler for the keystroke
 def key(event):
