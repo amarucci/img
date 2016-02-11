@@ -64,7 +64,6 @@ def updateImageBar(index):
 
     group.configure(text=currImage+". Other Images In " + dir)
 
-    group.configure(text=index)
     for i in range(0,maxThumbs):
        thmblbl[i].configure(image=thumbs[(i+index)%len(imgList)]) 
 
