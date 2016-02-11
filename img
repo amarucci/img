@@ -65,6 +65,7 @@ def key(event):
 
          #open the image and upadate current image
          currImage = imgList[(index)]
+         group.configure(text=currImage+". Other Images In " + dir)
          imopen()
      if event.keysym == 'Right':
          #update the top portion highlight
@@ -74,6 +75,7 @@ def key(event):
 
          #open the image and upadate current image
          currImage = imgList[(index)%len(imgList)]
+         group.configure(text=currImage+". Other Images In " + dir)
          imopen()
      
      #update the main label with the new image
@@ -162,6 +164,7 @@ imopen()
 group = LabelFrame(root,text=currImage+". Other Images in " + dir)
 group.config(bg=bgcolor,fg='white')
 group.pack()
+
 
 #put the image in a label
 mainImg = Label(root, image=tkimage)
