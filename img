@@ -14,16 +14,18 @@ def threaded_function():
     #thumbnail all the images in the folder, and add them to the frame
     thumbs = []
     for i,f in enumerate(imgList):
-        thumbs.append(Image.open(dir+f))
+        thumbs.append(Image.open(dir+imgList[i]))
         thumbs[i].thumbnail((.05*swidth,.05*sheight),Image.ANTIALIAS)
         thumbs[i] = ImageTk.PhotoImage(thumbs[i],palette=512)
 
         #create the label and pack it
-        if i == imgList.index(currImage): #one selected needs a border
-            thmblbl.append(Label(group,image=thumbs[i],bg='yellow',relief='raised',bd=2))
-        else:
-            thmblbl.append(Label(group,image=thumbs[i],bg='yellow',relief='raised',bd=0))
-        thmblbl[i].pack(side=LEFT)
+        #thmblbl is just 20 labels, to update it we just change the image. create the 20 labels first
+        if i <= 20:
+            if i == imgList.index(currImage): #one selected needs a border
+                thmblbl.append(Label(group,image=thumbs[i],bg='yellow',relief='raised',bd=2))
+            else:
+                thmblbl.append(Label(group,image=thumbs[i],bg='yellow',relief='raised',bd=0))
+            thmblbl[i].pack(side=LEFT)
 
 #set up the image, set up currImage and then call imopen
 def imopen():
@@ -52,6 +54,22 @@ def imopen():
     im = ImageOps.fit(im,(adjWidth,adjHeight), Image.ANTIALIAS)
     tkimage = ImageTk.PhotoImage(im, palette=512)
     
+#reconfigures the image bar, only 20 elements in thmblbl (thats the max you can have)
+def updateImageBar(index):
+    global thmblbl,group,thumbs
+    maxThumbs = len(imgList)
+
+    if maxThumbs > 20:
+        maxThumbs = 20
+    if index > 20:
+        index = 20
+
+    group.configure(text=currImage+". Other Images In " + dir)
+
+    for i in range(0,maxThumbs):
+       thmblbl[i].configure(image=thumbs[(i+index)%len(imgList)]) 
+       thmblbl[i].image = thumbs[(i+index)%len(imgList)]
+
 #the handler for the keystroke
 def key(event):
      global currImage,tkimage,thmblbl,group
@@ -59,32 +77,24 @@ def key(event):
 
      if event.keysym == 'Left':
          #update the top portion highlight
-         thmblbl[index].configure(bd=0)
-         thmblbl[index].bd = 0
          index = (index - 1)%len(imgList)
 
          #open the image and upadate current image
          currImage = imgList[(index)]
-         group.configure(text=currImage+". Other Images In " + dir)
+         updateImageBar(index)
          imopen()
      if event.keysym == 'Right':
          #update the top portion highlight
-         thmblbl[index].configure(bd=0)
-         thmblbl[index].bd = 0
          index = (index + 1)%len(imgList)
 
          #open the image and upadate current image
          currImage = imgList[(index)%len(imgList)]
-         group.configure(text=currImage+". Other Images In " + dir)
+         updateImageBar(index)
          imopen()
      
      #update the main label with the new image
      mainImg.configure(image=tkimage)
      mainImg.image = tkimage 
-
-     #update the image bar
-     thmblbl[index].configure(bd=2)
-     thmblbl[index].bd = 2
 
      #if the space bar is pressed, change the image
      if event.keysym == 'space':
@@ -177,3 +187,4 @@ root.geometry('{}x{}'.format(swidth,sheight))
 root.bind("<Key>", key)
 root.mainloop()
 thread.join()
+print(thumbs.count())
