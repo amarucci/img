@@ -6,9 +6,7 @@ from threading import Thread
 import sys
 import math
 import os
-from subprocess import call
-#import img_thread
-#import img_imopen
+from subprocess import call, Popen, PIPE
 
 #threading to make it faster
 def threaded_function():
@@ -38,12 +36,12 @@ def imopen():
 
     #set the width and height of the image
     (iwidth,iheight) = im.size
-    if(iwidth > maxWidth):
-        ratio = maxWidth/iwidth
+    if (iheight > maxHeight):
+        ratio = maxHeight/iheight
         adjHeight = int(math.ceil(iheight*ratio))
         adjWidth = int(math.ceil(iwidth*ratio))
-    elif (iheight > maxHeight):
-        ratio = maxHeight/iheight
+    if(iwidth > maxWidth):
+        ratio = maxWidth/iwidth
         adjHeight = int(math.ceil(iheight*ratio))
         adjWidth = int(math.ceil(iwidth*ratio))
     else:
@@ -56,7 +54,7 @@ def imopen():
     
 #the handler for the keystroke
 def key(event):
-     global currImage,tkimage,thmblbl
+     global currImage,tkimage,thmblbl,group
      index = imgList.index(currImage)
 
      if event.keysym == 'Left':
@@ -119,9 +117,19 @@ root = Tk()
 root.configure(bg=bgcolor)
 root.attributes("-fullscreen", True)
 
-#get the width and height of the screen
-swidth = root.winfo_screenwidth()
-sheight = root.winfo_screenheight()
+#get the path of the script that allows for multiple monitor support
+respath = os.path.realpath(__file__)
+respath = respath[0:respath.rfind('/')+1]
+
+#call the script to get dimensions, and pipe the input into python
+(dimensions,stderr) = Popen(respath+"determine_res",stdout=PIPE).communicate()
+
+#have to convert dimensions to a string
+dimensions = dimensions.decode(encoding='UTF-8')
+
+#get the width and height from dimensions
+swidth = int(dimensions[0:dimensions.find('x')])
+sheight = int(dimensions[dimensions.rfind('x')+1:len(dimensions)])
 
 #set up the list for all the images
 dirlist = os.listdir(dir)
@@ -138,11 +146,6 @@ if(len(imgList) == 0):
     print("No images in directory")
     exit()
 
-#create the bottom portion
-group = LabelFrame(root,text="Other Images in " + dir)
-group.config(bg=bgcolor,fg='white')
-group.pack()
-
 #declare the array to hold the labels
 thmblbl = []
 
@@ -154,6 +157,11 @@ thread.start()
 if currImage == '':
     currImage = imgList[0]
 imopen()
+
+#create the top portion
+group = LabelFrame(root,text=currImage+". Other Images in " + dir)
+group.config(bg=bgcolor,fg='white')
+group.pack()
 
 #put the image in a label
 mainImg = Label(root, image=tkimage)
