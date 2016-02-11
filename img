@@ -57,7 +57,7 @@ def imopen():
 #reconfigures the image bar, only 20 elements in thmblbl (thats the max you can have)
 def updateImageBar(index):
     global thmblbl,group,thumbs
-    maxThumbs = len(imgList)
+    maxThumbs = sizeImgList 
 
     if maxThumbs > 20:
         maxThumbs = 20
@@ -65,7 +65,7 @@ def updateImageBar(index):
     group.configure(text=currImage+". Other Images In " + dir)
 
     for i in range(0,maxThumbs):
-       thmblbl[i].configure(image=thumbs[(i+index)%len(imgList)]) 
+       thmblbl[i].configure(image=thumbs[(i+index)%sizeImgList]) 
 
 #the handler for the keystroke
 def key(event):
@@ -74,7 +74,7 @@ def key(event):
 
      if event.keysym == 'Left':
          #update the top portion highlight
-         index = (index - 1)%len(imgList)
+         index = (index - 1)%sizeImgList
 
          #open the image and upadate current image
          currImage = imgList[(index)]
@@ -82,10 +82,10 @@ def key(event):
          imopen()
      if event.keysym == 'Right':
          #update the top portion highlight
-         index = (index + 1)%len(imgList)
+         index = (index + 1)%sizeImgList
 
          #open the image and upadate current image
-         currImage = imgList[(index)%len(imgList)]
+         currImage = imgList[(index)%sizeImgList]
          updateImageBar(index)
          imopen()
      
@@ -151,7 +151,8 @@ for f in dirlist:
         pass
 
 #see if the list has anything in it
-if(len(imgList) == 0):
+sizeImgList = len(imgList)
+if(sizeImgList == 0):
     print("No images in directory")
     exit()
 
